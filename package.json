@@ -1,0 +1,129 @@
+{
+    "name": "xblog",
+    "displayName": "xblog",
+    "description": "xblog",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.33.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.publishBlog",
+        "onCommand:extension.updateBlog",
+        "onCommand:extension.delBlog",
+        "onCommand:extension.searchBlog",
+        "onCommand:extension.uploadImg",
+        "onCommand:extension.copyImg",
+        "onLanguage:markdown"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.publishBlog",
+                "title": "public blog 发布 "
+            },
+            {
+                "command": "extension.updateBlog",
+                "title": "update blog 更新 "
+            },
+            {
+                "command": "extension.delBlog",
+                "title": "del blog 删除"
+            },
+            {
+                "command": "extension.searchBlog",
+                "title": "search blog 搜索"
+            },
+            {
+                "command": "extension.uploadImg",
+                "title": "upload image blog 上传图片"
+            },
+            {
+                "command": "extension.copyImg",
+                "title": "copy image blog 粘贴图片"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.copyImg",
+                "key": "ctrl+alt+i",
+                "mac": "cmd+alt+i",
+                "when": "editorTextFocus"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "xblog",
+            "properties": {
+                "xblog.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "是否启用xblog"
+                },
+                "xblog.accessToken": {
+                    "type": "string",
+                    "default": "",
+                    "description": "授权访问凭证"
+                },
+                "xblog.api": {
+                    "type": "string",
+                    "default": "http://192.168.1.205:8080",
+                    "description": "xblog Api 请求根路径"
+                },
+                "xblog.publishUri": {
+                    "type": "string",
+                    "default": "/article/public",
+                    "description": "发布文档Uri地址"
+                },
+                "xblog.updateUrl": {
+                    "type": "string",
+                    "default": "/article/update",
+                    "description": "修改文档Uri地址"
+                },
+                "xblog.deleteUri": {
+                    "type": "string",
+                    "default": "/article/del",
+                    "description": "删除文档Uri地址"
+                },
+                "xblog.searchUri": {
+                    "type": "string",
+                    "default": "/article/search",
+                    "description": "搜索文档Uri地址"
+                },
+                "xblog.uploadImageUri": {
+                    "type": "string",
+                    "default": "/file/upload",
+                    "description": "上传图片Uri地址"
+                },
+                "xblog.localPath": {
+                    "type": "string",
+                    "default": "./blogImage",
+                    "description": "图片本地保存位置"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^3.3.1",
+        "vscode": "^1.1.28",
+        "tslint": "^5.12.1",
+        "@types/node": "^10.12.21",
+        "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "front-matter": "^3.0.2",
+        "jimp": "^0.6.1",
+        "lodash": "^4.17.11",
+        "request": "^2.88.0"
+    }
+}
