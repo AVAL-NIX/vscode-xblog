@@ -1,65 +1,84 @@
-# xblog README
+# xblog
 
-This is the README for your extension "xblog". After writing up a brief description, we recommend including the following sections.
+配合博客使用
 
-## Features
+## 配置参数
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+|参数名| 备注 |默认值|
+|-|-|-|-|
+|xblog.enable | 是否启用xblog| true|
+|xblog.accessToken | 授权访问凭证 | |
+|xblog.api | xblog Api 请求根路径 | http://localhost:8080|
+|xblog.publishUri | [发布/修改]文档Uri地址 | /article/public|
+|xblog.searchUri | 搜索文档Uri地址 | /article/search|
+|xblog.uploadImageUri | 上传图片Uri地址 | /file/upload |
+|xblog.localPath | 图片本地保存位置 | ./blogImage |
 
-For example if there is an image subfolder under your extension project workspace:
+```text
+{
+    "xblog.enable": true,
+    "xblog.accessToken": "123456",
+    "xblog.api": "http://localhost:8080",
+    "xblog.publishUri": "/article/public",
+    "xblog.searchUri":  "/article/search",
+    "xblog.uploadImageUri":  "/file/upload",
+    "xblog.localPath":  "./blogImage"
+}
+```
 
-\!\[feature X\]\(images/feature-x.png\)
+## 发布文章 xblog.publishUri
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+发布文章DTO 服务端主要是以下5个属性
 
-## Requirements
+|属性|类型|描述|
+|-|-|-|
+|submitToken|String|文章提交凭证|
+|title|String|文章标题|
+|channel|String|文章频道|
+|labels|String|文章标签 以,号隔开  标签1,标签2,标签3|
+|content|String|文章主体|
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+返回值也是此DTO 用于映射文章头
 
-## Extension Settings
+|属性|类型|描述|
+|-|-|-|
+|code|int|成功大于0|
+|msg|String|描述|
+|data|Object|发布文章DTO|
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+![](./images/public.gif)
 
-For example:
+## 上传图片 xblog.uploadImageUri
 
-This extension contributes the following settings:
+上传图片属性
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+|属性|类型|描述|
+|-|-|-|
+|multipartFile|File|图片文件|
 
-## Known Issues
+返回值
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+|属性|类型|描述|
+|-|-|-|
+|code|int|成功大于0|
+|msg|String|图片文件在服务器的绝对路径|
 
-## Release Notes
+![](./images/upload.gif)
 
-Users appreciate release notes as you update your extension.
+## 搜索文章 xblog.searchUri
 
-### 1.0.0
+搜索文章属性
 
-Initial release of ...
+|属性|类型|描述|
+|-|-|-|
+|title|String|搜索的文章名|
 
-### 1.0.1
+返回值
 
-Fixed issue #.
+|属性|类型|描述|
+|-|-|-|
+|code|int|成功大于0|
+|msg|String|描述|
+|data|List<发布文章DTO> |符合条件的文章,自行控制数量|
 
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+![](./images/search.gif)

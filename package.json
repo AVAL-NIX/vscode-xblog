@@ -2,17 +2,24 @@
     "name": "xblog",
     "displayName": "xblog",
     "description": "xblog",
-    "version": "0.0.1",
+    "version": "1.0.0",
+    "publisher": "avalon",
     "engines": {
         "vscode": "^1.33.0"
     },
     "categories": [
         "Other"
     ],
+    "bugs": {
+        "url": "https://github.com/AVAL-NIX"
+    },
+    "homepage": "https://github.com/AVAL-NIX/vscode-xblog/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AVAL-NIX/vscode-xblog"
+    },
     "activationEvents": [
         "onCommand:extension.publishBlog",
-        "onCommand:extension.updateBlog",
-        "onCommand:extension.delBlog",
         "onCommand:extension.searchBlog",
         "onCommand:extension.uploadImg",
         "onCommand:extension.copyImg",
@@ -24,14 +31,6 @@
             {
                 "command": "extension.publishBlog",
                 "title": "public blog 发布 "
-            },
-            {
-                "command": "extension.updateBlog",
-                "title": "update blog 更新 "
-            },
-            {
-                "command": "extension.delBlog",
-                "title": "del blog 删除"
             },
             {
                 "command": "extension.searchBlog",
@@ -70,23 +69,13 @@
                 },
                 "xblog.api": {
                     "type": "string",
-                    "default": "http://192.168.1.205:8080",
+                    "default": "http://localhost:8080",
                     "description": "xblog Api 请求根路径"
                 },
                 "xblog.publishUri": {
                     "type": "string",
                     "default": "/article/public",
                     "description": "发布文档Uri地址"
-                },
-                "xblog.updateUrl": {
-                    "type": "string",
-                    "default": "/article/update",
-                    "description": "修改文档Uri地址"
-                },
-                "xblog.deleteUri": {
-                    "type": "string",
-                    "default": "/article/del",
-                    "description": "删除文档Uri地址"
                 },
                 "xblog.searchUri": {
                     "type": "string",
@@ -124,6 +113,7 @@
         "front-matter": "^3.0.2",
         "jimp": "^0.6.1",
         "lodash": "^4.17.11",
+        "moment": "^2.24.0",
         "request": "^2.88.0"
     }
 }

@@ -16,14 +16,36 @@ function activate(context) {
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
     // 发布文章
-    let publishMd = vscode_1.commands.registerCommand('extension.publishBlog', function () {
+    let publishArticle = vscode_1.commands.registerCommand('extension.publishBlog', function () {
         // 验证
         if (!validate()) {
             return;
         }
         new blog_1.xblog().publicAritle();
     });
-    context.subscriptions.push(publishMd);
+    context.subscriptions.push(publishArticle);
+    // 搜索文章
+    let searchArticle = vscode_1.commands.registerCommand('extension.searchBlog', function () {
+        // 验证
+        if (!validate()) {
+            return;
+        }
+        vscode_1.window.showInputBox({
+            placeHolder: "输入文档标题搜索"
+        }).then(function (title) {
+            if (title === undefined || title.length <= 0) {
+                vscode_1.window.showWarningMessage("请输入内容!");
+                return;
+            }
+            let data = {
+                "title": title
+            };
+            if (data !== null) {
+                new blog_1.xblog().searchAritle(data);
+            }
+        });
+    });
+    context.subscriptions.push(searchArticle);
     //复制截屏
     let copyImg = vscode.commands.registerCommand('extension.copyImg', () => {
         // 验证

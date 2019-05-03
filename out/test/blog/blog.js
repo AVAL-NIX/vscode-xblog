@@ -20,6 +20,7 @@ class xblog {
         this.deleteApi = config.api + config.deleteUri;
         this.searchApi = config.api + config.searchUri;
         this.uploadApi = config.api + config.uploadImageUri;
+        this.accessToken = config.accessToken;
     }
     /**
      * 配置验证
@@ -49,12 +50,12 @@ class xblog {
         let text = activeText.document.getText();
         // 解析元数据
         let result = fm(text);
-        let sign = result.attributes.sign;
+        let submitToken = result.attributes.submitToken;
         let title = result.attributes.title;
-        let tags = result.attributes.tags;
+        let labels = result.attributes.labels;
         let channel = result.attributes.channel;
         let content = result.body;
-        if (isCheck && (sign === null || sign === "")) {
+        if (isCheck && (submitToken === null || submitToken === "")) {
             r.msg = '元数据[签名]丢失，请重新获取数据';
             r.code = -1;
             return r;
@@ -75,11 +76,11 @@ class xblog {
             return r;
         }
         var data = {
-            "sign": sign,
-            "title": title,
-            "channel": channel,
-            "tags": tags,
-            "content": content
+            "submitToken": submitToken === undefined ? "" : submitToken,
+            "title": title === undefined ? "" : title,
+            "channel": channel === undefined ? "" : channel,
+            "labels": labels === undefined ? "" : labels,
+            "content": content === undefined ? "" : content
         };
         r.code = 1;
         r.msg = "处理成功!";
@@ -100,9 +101,9 @@ class xblog {
             let activeText = vscode_1.window.activeTextEditor;
             let text = activeText.document.lineAt(0).text;
             activeText.edit((editBuilder) => {
-                let meta = genMetaHeader(body.data.sign, body.data.title, body.data.channel, body.data.tags);
+                let meta = genMetaHeader(body.data.submitToken, body.data.title, body.data.channel, body.data.labels);
                 if (text.startsWith("---")) {
-                    editBuilder.replace(new vscode_1.Range(new vscode_1.Position(0, 0), new vscode_1.Position(5, data.length)), meta);
+                    editBuilder.replace(new vscode_1.Range(new vscode_1.Position(0, 0), new vscode_1.Position(6, data.length)), meta);
                 }
                 else {
                     editBuilder.insert(new vscode_1.Position(0, 0), meta);
@@ -111,18 +112,63 @@ class xblog {
             vscode_1.window.showInformationMessage(body.msg);
         });
     }
-    updateAritle() {
+    /**
+     * 搜索文章
+     *
+     * @param data
+     */
+    searchAritle(data) {
+        this.requestApi(this.searchApi, data, (body) => {
+            let array = [];
+            if (body.data === null || body.data.length < 1) {
+                vscode_1.window.showInformationMessage("没有查询到文章");
+                return;
+            }
+            for (var i = 0; i < body.data.length; i++) {
+                array[i] = body.data[i].title;
+            }
+            vscode_1.window.showQuickPick(array).then(function (title) {
+                let json = findByTitle(body.data, title);
+                let content = genMetaHeader(json['submitToken'], json['title'], json['channel'], json['labels']) + json['content'];
+                let filePath = vscode_1.workspace.rootPath;
+                if (filePath === undefined || filePath === null) {
+                    let files = vscode_1.workspace.textDocuments;
+                    if (files.length) {
+                        filePath = path.dirname(files[files.length - 1].fileName);
+                    }
+                    else {
+                        vscode_1.window.setStatusBarMessage("错误,获取工作空间目录失败");
+                        vscode_1.workspace.openTextDocument("untitled-1.md").then(document => {
+                            vscode_1.window.showTextDocument(document);
+                        });
+                    }
+                }
+                // 新建文档
+                let newFile = vscode_1.Uri.parse("untitled:" + path.join(filePath, title + ".md"));
+                vscode_1.workspace.openTextDocument(newFile).then(document => {
+                    const edit = new vscode_1.WorkspaceEdit();
+                    edit.insert(newFile, new vscode_1.Position(0, 0), content);
+                    return vscode_1.workspace.applyEdit(edit).then(success => {
+                        if (success) {
+                            vscode_1.window.showTextDocument(document);
+                        }
+                        else {
+                            vscode_1.window.showErrorMessage("创建文件出错!");
+                        }
+                    });
+                });
+            });
+        });
     }
     /**
      * 上传图片
      * @param localPath
      */
     uploadImg(localPath) {
-        let config = vscode.workspace.getConfiguration('xblog');
         request.post({
             url: this.uploadApi,
             headers: {
-                "accessToken": config.accessToken
+                "accessToken": this.accessToken
             },
             formData: {
                 "multipartFile": fs.createReadStream(localPath)
@@ -142,8 +188,6 @@ class xblog {
             }
         });
     }
-    deleteAritle() {
-    }
     /**
      * 复制图片
      */
@@ -158,12 +202,11 @@ class xblog {
      * @param cb
      */
     requestApi(api, data, cb) {
-        let config = vscode_1.workspace.getConfiguration('xblog');
         request.post({
             url: api,
             json: true,
             headers: {
-                "accessToken": config.accessToken
+                "accessToken": this.accessToken
             },
             form: data
         }, function (error, response, body) {
@@ -191,14 +234,14 @@ function genImage(title, url) {
 //标题头
 const METADATA_HEADER = `\
 ---
-sign: %s
+submitToken: %s
 title: %s
 channel: %s
-tags: %s
+labels: %s
 ---
 `;
-function genMetaHeader(sign, title, channel, tags) {
-    return util.format(METADATA_HEADER, sign, channel, title, tags);
+function genMetaHeader(submitToken, title, channel, labels) {
+    return util.format(METADATA_HEADER, submitToken, title, channel, labels);
 }
 /**
  * 服务器对应的返回类
@@ -331,7 +374,7 @@ function saveClipboardImageToFileAndGetPath(imagePath, cb) {
         });
     }
     else {
-        // Linux 
+        // Linux
         let scriptPath = path.join(__dirname, './lib/linux.sh');
         let ascript = spawn('sh', [scriptPath, imagePath]);
         ascript.on('exit', function (code, signal) {
@@ -345,5 +388,19 @@ function saveClipboardImageToFileAndGetPath(imagePath, cb) {
             cb(result);
         });
     }
+}
+/**
+ * 根据标题查找
+ * @param {array} array  数据集
+ * @param {string} title  标题
+ * @return {JSON} markdown 数据对象
+ */
+function findByTitle(array, title) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].title === title) {
+            return array[i];
+        }
+    }
+    return null;
 }
 //# sourceMappingURL=blog.js.map
