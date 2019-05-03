@@ -5,7 +5,7 @@
 ## 配置参数
 
 |参数名| 备注 |默认值|
-|-|-|-|-|
+|-|-|-|
 |xblog.enable | 是否启用xblog| true|
 |xblog.accessToken | 授权访问凭证 | |
 |xblog.api | xblog Api 请求根路径 | http://localhost:8080|
