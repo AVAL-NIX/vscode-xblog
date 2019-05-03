@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const vscode = require("vscode");
 const vscode_1 = require("vscode");
 //  获取MD元数据插件
 const fm = require("front-matter");
@@ -10,11 +9,10 @@ const fs = require("fs");
 const util = require("util");
 const moment = require('moment');
 const { spawn } = require('child_process');
-// tslint:disable-next-line: class-name
-class xblog {
+class Xblog {
     constructor() {
         this.validateConfig();
-        let config = vscode.workspace.getConfiguration('xblog');
+        let config = vscode_1.workspace.getConfiguration('xblog');
         this.publicApi = config.api + config.publishUri;
         this.updateApi = config.api + config.updateUrl;
         this.deleteApi = config.api + config.deleteUri;
@@ -177,10 +175,10 @@ class xblog {
             if (!error && response.statusCode === 200) {
                 let data = eval('(' + body + ')');
                 if (data.code < 1) {
-                    vscode.window.showWarningMessage(data.msg);
+                    vscode_1.window.showWarningMessage(data.msg);
                     return;
                 }
-                let editor = vscode.window.activeTextEditor;
+                let editor = vscode_1.window.activeTextEditor;
                 editor.edit((editBuilder) => {
                     let markdownStr = genImage("", data.msg);
                     editBuilder.insert(editor.selection.active, markdownStr);
@@ -223,7 +221,7 @@ class xblog {
         });
     }
 }
-exports.xblog = xblog;
+exports.Xblog = Xblog;
 const IMG = "![%s](%s \"%s\")";
 /**
  * 生成markdown Image
@@ -256,7 +254,7 @@ class R {
 //截屏
 function start() {
     // 获取当前编辑文件
-    let editor = vscode.window.activeTextEditor;
+    let editor = vscode_1.window.activeTextEditor;
     if (!editor) {
         return;
     }
@@ -265,19 +263,19 @@ function start() {
         return;
     }
     if (fileUri.scheme === 'untitled') {
-        vscode.window.showInformationMessage('Before paste image, you need to save current edit file first.');
+        vscode_1.window.showInformationMessage('Before paste image, you need to save current edit file first.');
         return;
     }
     let selection = editor.selection;
     let selectText = editor.document.getText(selection);
     if (selectText && !/^[\w\-.]+$/.test(selectText)) {
-        vscode.window.showInformationMessage('Your selection is not a valid file name!');
+        vscode_1.window.showInformationMessage('Your selection is not a valid file name!');
         return;
     }
-    let config = vscode.workspace.getConfiguration('xblog');
+    let config = vscode_1.workspace.getConfiguration('xblog');
     let localPath = config['localPath'];
     if (localPath && (localPath.length !== localPath.trim().length)) {
-        vscode.window.showErrorMessage('The specified path is invalid. "' + localPath + '"');
+        vscode_1.window.showErrorMessage('The specified path is invalid. "' + localPath + '"');
         return;
     }
     let filePath = fileUri.fsPath;
@@ -290,14 +288,14 @@ function start() {
                 return;
             }
             if (imagePath === 'no image') {
-                vscode.window.showInformationMessage('没有要复制的图片,请重新截屏!');
+                vscode_1.window.showInformationMessage('没有要复制的图片,请重新截屏!');
                 return;
             }
             imagePath = imagePath.substring(0, imagePath.lastIndexOf(".")) + ".png";
-            new xblog().uploadImg(imagePath);
+            new Xblog().uploadImg(imagePath);
         });
     }).catch(err => {
-        vscode.window.showErrorMessage('创建文件夹失败!.');
+        vscode_1.window.showErrorMessage('创建文件夹失败!.');
         return;
     });
 }
@@ -346,7 +344,7 @@ function saveClipboardImageToFileAndGetPath(imagePath, cb) {
     let platform = process.platform;
     if (platform === 'win32') {
         // Windows
-        const scriptPath = path.join(__dirname, './lib/pc.ps1');
+        const scriptPath = path.join(__dirname, '../../../lib/pc.ps1');
         const powershell = spawn('powershell', [
             '-noprofile',
             '-noninteractive',
@@ -365,7 +363,7 @@ function saveClipboardImageToFileAndGetPath(imagePath, cb) {
     }
     else if (platform === 'darwin') {
         // Mac
-        let scriptPath = path.join(__dirname, './lib/mac.applescript');
+        let scriptPath = path.join(__dirname, '../../../lib/mac.applescript');
         let ascript = spawn('osascript', [scriptPath, imagePath]);
         ascript.on('exit', function (code, signal) {
         });
@@ -375,14 +373,14 @@ function saveClipboardImageToFileAndGetPath(imagePath, cb) {
     }
     else {
         // Linux
-        let scriptPath = path.join(__dirname, './lib/linux.sh');
+        let scriptPath = path.join(__dirname, '../../../lib/linux.sh');
         let ascript = spawn('sh', [scriptPath, imagePath]);
         ascript.on('exit', function (code, signal) {
         });
         ascript.stdout.on('data', function (data) {
             let result = data.toString().trim();
             if (result === "no xclip") {
-                vscode.window.showInformationMessage('You need to install xclip command first.');
+                vscode_1.window.showInformationMessage('You need to install xclip command first.');
                 return;
             }
             cb(result);

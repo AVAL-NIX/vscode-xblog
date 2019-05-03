@@ -46,7 +46,7 @@
 |msg|String|描述|
 |data|Object|发布文章DTO|
 
-![](./images/public.gif)
+![](https://github.com/AVAL-NIX/vscode-xblog/raw/master/images/public.gif)
 
 ## 上传图片 xblog.uploadImageUri
 
@@ -63,7 +63,7 @@
 |code|int|成功大于0|
 |msg|String|图片文件在服务器的绝对路径|
 
-![](./images/upload.gif)
+![](https://github.com/AVAL-NIX/vscode-xblog/raw/master/images/upload.gif)
 
 ## 搜索文章 xblog.searchUri
 
@@ -81,4 +81,4 @@
 |msg|String|描述|
 |data|List<发布文章DTO> |符合条件的文章,自行控制数量|
 
-![](./images/search.gif)
+![](https://github.com/AVAL-NIX/vscode-xblog/raw/master/images/search.gif)

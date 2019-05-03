@@ -1,8 +1,8 @@
 {
     "name": "xblog",
     "displayName": "xblog",
-    "description": "xblog",
-    "version": "1.0.0",
+    "description": "提升写日记效率,用与自定义项目对接",
+    "version": "1.0.1",
     "publisher": "avalon",
     "engines": {
         "vscode": "^1.33.0"
@@ -13,11 +13,12 @@
     "bugs": {
         "url": "https://github.com/AVAL-NIX"
     },
-    "homepage": "https://github.com/AVAL-NIX/vscode-xblog/README.md",
+    "homepage": "https://github.com/AVAL-NIX/vscode-xblog/blob/master/README.md",
     "repository": {
         "type": "git",
         "url": "https://github.com/AVAL-NIX/vscode-xblog"
     },
+    "icon": "images/icon.png",
     "activationEvents": [
         "onCommand:extension.publishBlog",
         "onCommand:extension.searchBlog",

@@ -1,16 +1,18 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
 
 // 引入api
-import { xblog } from "./test/blog/blog";
-import { config } from 'process';
+declare function require(moduleName: string): any;
+
+import { Xblog } from './blog/blog';
+
+
 import { workspace, window, commands } from 'vscode';
 
 
 // this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+// your extension is activated the ver y first time the command is executed
+export function activate(context: any) {
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
@@ -19,14 +21,19 @@ export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-
+    // 发布文章
+    let hi = commands.registerCommand('extension.Hi', () => {
+        // 验证
+        window.showWarningMessage("hi");
+    });
+    context.subscriptions.push(hi);
     // 发布文章
     let publishArticle = commands.registerCommand('extension.publishBlog', function () {
         // 验证
         if (!validate()) {
             return;
         }
-        new xblog().publicAritle();
+        new Xblog().publicAritle();
     });
     context.subscriptions.push(publishArticle);
 
@@ -47,19 +54,19 @@ export function activate(context: vscode.ExtensionContext) {
                 "title": title
             };
             if (data !== null) {
-                new xblog().searchAritle(data);
+                new Xblog().searchAritle(data);
             }
         });
     });
     context.subscriptions.push(searchArticle);
 
     //复制截屏
-    let copyImg = vscode.commands.registerCommand('extension.copyImg', () => {
+    let copyImg = commands.registerCommand('extension.copyImg', () => {
         // 验证
         if (!validate()) {
             return;
         }
-        new xblog().copyImg();
+        new Xblog().copyImg();
     });
     context.subscriptions.push(copyImg);
 
@@ -77,7 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }).then(uri => {
             if (uri) {
-                new xblog().uploadImg(uri[0].fsPath);
+                new Xblog().uploadImg(uri[0].fsPath);
             }
         });
 
