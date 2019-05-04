@@ -2,7 +2,7 @@
     "name": "xblog",
     "displayName": "xblog",
     "description": "提升写日记效率,用与自定义项目对接",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "publisher": "avalon",
     "engines": {
         "vscode": "^1.33.0"
