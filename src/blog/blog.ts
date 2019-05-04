@@ -370,7 +370,7 @@ function saveClipboardImageToFileAndGetPath(imagePath: {}, cb: { (arg0: string):
     let platform = process.platform;
     if (platform === 'win32') {
         // Windows
-        const scriptPath = path.join(__dirname, '../../../lib/pc.ps1');
+        const scriptPath = path.join(__dirname, '../../lib/pc.ps1');
         const powershell = spawn('powershell', [
             '-noprofile',
             '-noninteractive',
@@ -389,7 +389,7 @@ function saveClipboardImageToFileAndGetPath(imagePath: {}, cb: { (arg0: string):
         });
     } else if (platform === 'darwin') {
         // Mac
-        let scriptPath = path.join(__dirname, '../../../lib/mac.applescript');
+        let scriptPath = path.join(__dirname, '../../lib/mac.applescript');
 
         let ascript = spawn('osascript', [scriptPath, imagePath]);
         ascript.on('exit', function (code: any, signal: any) {
@@ -402,7 +402,7 @@ function saveClipboardImageToFileAndGetPath(imagePath: {}, cb: { (arg0: string):
     } else {
         // Linux
 
-        let scriptPath = path.join(__dirname, '../../../lib/linux.sh');
+        let scriptPath = path.join(__dirname, '../../lib/linux.sh');
 
         let ascript = spawn('sh', [scriptPath, imagePath]);
         ascript.on('exit', function (code: any, signal: any) {
