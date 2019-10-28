@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { workspace, window, Range, Position, WorkspaceEdit, Uri } from 'vscode';
-
+const qiniu = require("qiniu");
 //  获取MD元数据插件
 const fm = require("front-matter");
 const request = require("request");
@@ -18,6 +18,11 @@ class Xblog {
     searchApi: string;
     uploadApi: string;
     accessToken: string;
+    isQiNiu: boolean;
+    domain: string;
+    ACCESS_KEY: string;
+    SECRET_KEY: string;
+    bucket: string;
 
     constructor() {
         this.validateConfig();
@@ -28,6 +33,11 @@ class Xblog {
         this.searchApi = config.api + config.searchUri;
         this.uploadApi = config.api + config.uploadImageUri;
         this.accessToken = config.accessToken;
+        this.isQiNiu = config.isQiNiu;
+        this.domain = config.domain;
+        this.ACCESS_KEY = config.ACCESS_KEY;
+        this.SECRET_KEY = config.SECRET_KEY;
+        this.bucket = config.bucket;
     }
 
     /**
@@ -142,7 +152,7 @@ class Xblog {
             }
             window.showQuickPick(array).then(function (title) {
                 let json = findByTitle(body.data, title);
-                let content = genMetaHeader(json['submitToken'], json['title'],json['channel'], json['labels']) + json['content'];
+                let content = genMetaHeader(json['submitToken'], json['title'], json['channel'], json['labels']) + json['content'];
 
                 let filePath: any = workspace.rootPath;
                 if (filePath === undefined || filePath === null) {
@@ -179,6 +189,10 @@ class Xblog {
      * @param localPath
      */
     uploadImg(localPath: string) {
+        if (this.isQiNiu) {
+            this.upLoadImgByQiNiu(localPath)
+            return;
+        }
         request.post({
             url: this.uploadApi,
             headers: {
@@ -202,6 +216,60 @@ class Xblog {
             }
         });
     }
+
+
+    /**
+     * 七牛云图床上传
+     * @param filePath 本地文件路径
+     */
+    upLoadImgByQiNiu(filePath: string) {
+        //重新生成图片名
+        let imageFileName = moment().format("YYYYMMDDHHmmss") + '.png';
+
+        let $domain = this.domain;
+        if (!$domain.endsWith("/")) {
+            $domain = $domain + "/"
+        }
+        //需要填写你的 Access Key 和 Secret Key
+        qiniu.conf.ACCESS_KEY = this.ACCESS_KEY;
+        qiniu.conf.SECRET_KEY = this.SECRET_KEY;
+        //要上传的空间
+        let bucket = this.bucket;
+        //上传到七牛后保存的文件名
+        let key = imageFileName//filePath.split("\\").slice(-1)[0].trim();
+        console.log(" key : " + key, "filePath:", filePath)
+        var mac = new qiniu.auth.digest.Mac(this.ACCESS_KEY, this.SECRET_KEY);
+        //构建上传策略函数
+        var options = {
+            scope: bucket,
+        };
+        var putPolicy = new qiniu.rs.PutPolicy(options);
+        var uploadToken = putPolicy.uploadToken(mac);
+
+        //要上传文件的本地路径
+        // 文件上传
+        var config = new qiniu.conf.Config();
+        var putExtra = new qiniu.form_up.PutExtra();
+        // 空间对应的机房
+        config.zone = qiniu.zone.Zone_z2;
+        var formUploader = new qiniu.form_up.FormUploader(config);
+        formUploader.putFile(uploadToken, key, filePath, putExtra, function (respErr: any,
+            respBody: any, respInfo: { statusCode: number; }) {
+            if (respErr) {
+                throw respErr;
+            }
+            if (respInfo.statusCode == 200) {
+                let editor: any = window.activeTextEditor;
+                editor.edit((editBuilder: { insert: (arg0: any, arg1: any) => void; }) => {
+                    let markdownStr = genImage("", $domain + key);
+                    editBuilder.insert(editor.selection.active, markdownStr);
+                });
+            } else {
+                window.showWarningMessage(respBody);
+            }
+        });
+    }
+
 
     /**
      * 复制图片
@@ -240,7 +308,7 @@ class Xblog {
     }
 
 }
-export {Xblog};
+export { Xblog };
 const IMG = "![%s](%s \"%s\")";
 /**
  * 生成markdown Image
@@ -309,7 +377,7 @@ function start() {
     const mdFilePath = editor.document.fileName;
     const mdFileName = path.basename(mdFilePath, path.extname(mdFilePath));
 
-    createImageDirWithImagePath(imagePath).then(imagePath => {
+    createImageDirWithImagePath(imagePath).then((imagePath:any) => {
         saveClipboardImageToFileAndGetPath(imagePath, (imagePath: string) => {
             if (!imagePath) { return; }
             if (imagePath === 'no image') {
@@ -365,12 +433,12 @@ function createImageDirWithImagePath(imagePath: string) {
     });
 }
 
-function saveClipboardImageToFileAndGetPath(imagePath: {}, cb: { (arg0: string): void; (arg0: string): void; (arg0: string): void; }) {
+function saveClipboardImageToFileAndGetPath(imagePath: string, cb: { (arg0: string): void; (arg0: string): void; (arg0: string): void; }) {
     if (!imagePath) { return; }
     let platform = process.platform;
     if (platform === 'win32') {
-        // Windows
-        const scriptPath = path.join(__dirname, '../../../lib/pc.ps1');
+        // Windows 正式环境 3个../ 开发环境2个
+        const scriptPath = path.join(__dirname, '../../lib/pc.ps1');
         const powershell = spawn('powershell', [
             '-noprofile',
             '-noninteractive',
