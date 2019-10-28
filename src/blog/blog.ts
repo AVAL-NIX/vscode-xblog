@@ -438,7 +438,7 @@ function saveClipboardImageToFileAndGetPath(imagePath: string, cb: { (arg0: stri
     let platform = process.platform;
     if (platform === 'win32') {
         // Windows 正式环境 3个../ 开发环境2个
-        const scriptPath = path.join(__dirname, '../../lib/pc.ps1');
+        const scriptPath = path.join('../../lib/pc.ps1');
         const powershell = spawn('powershell', [
             '-noprofile',
             '-noninteractive',
