@@ -457,7 +457,7 @@ function saveClipboardImageToFileAndGetPath(imagePath: string, cb: { (arg0: stri
         });
     } else if (platform === 'darwin') {
         // Mac
-        let scriptPath = path.join(__dirname, '../../../lib/mac.applescript');
+        let scriptPath = path.join(__dirname, '../../lib/mac.applescript');
 
         let ascript = spawn('osascript', [scriptPath, imagePath]);
         ascript.on('exit', function (code: any, signal: any) {
@@ -470,7 +470,7 @@ function saveClipboardImageToFileAndGetPath(imagePath: string, cb: { (arg0: stri
     } else {
         // Linux
 
-        let scriptPath = path.join(__dirname, '../../../lib/linux.sh');
+        let scriptPath = path.join(__dirname, '../../lib/linux.sh');
 
         let ascript = spawn('sh', [scriptPath, imagePath]);
         ascript.on('exit', function (code: any, signal: any) {
