@@ -227,6 +227,7 @@ class Xblog {
             },
             form: data
         }, function (error: any, response: { statusCode: number; }, body: any) {
+            console.log("e",error ,response);
             if (!error && response.statusCode === 200) {
                 if (body.code < 1) {
                     window.showWarningMessage(body.msg);
@@ -309,7 +310,7 @@ function start() {
     const mdFilePath = editor.document.fileName;
     const mdFileName = path.basename(mdFilePath, path.extname(mdFilePath));
 
-    createImageDirWithImagePath(imagePath).then(imagePath => {
+    createImageDirWithImagePath(imagePath).then( () => {
         saveClipboardImageToFileAndGetPath(imagePath, (imagePath: string) => {
             if (!imagePath) { return; }
             if (imagePath === 'no image') {
@@ -325,7 +326,7 @@ function start() {
     });
 }
 
-function getImagePath(filePath: string, selectText: string, localPath: any) {
+function getImagePath(filePath: string, selectText: string, localPath: any): string {
     // 图片名称
     let imageFileName = '';
     if (!selectText) {
@@ -346,7 +347,7 @@ function getImagePath(filePath: string, selectText: string, localPath: any) {
     return imagePath;
 }
 
-function createImageDirWithImagePath(imagePath: string) {
+function createImageDirWithImagePath(imagePath: string){
     return new Promise((resolve, reject) => {
         let imageDir = path.dirname(imagePath);
         fs.exists(imageDir, (exists: any) => {
@@ -365,7 +366,7 @@ function createImageDirWithImagePath(imagePath: string) {
     });
 }
 
-function saveClipboardImageToFileAndGetPath(imagePath: {}, cb: { (arg0: string): void; (arg0: string): void; (arg0: string): void; }) {
+function saveClipboardImageToFileAndGetPath(imagePath: string, cb: { (arg0: string): void; (arg0: string): void; (arg0: string): void; }) {
     if (!imagePath) { return; }
     let platform = process.platform;
     if (platform === 'win32') {
