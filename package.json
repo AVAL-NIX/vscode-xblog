@@ -2,7 +2,11 @@
     "name": "xblog",
     "displayName": "xblog",
     "description": "提升写日记效率,用与自定义项目对接",
+<<<<<<< HEAD
     "version": "1.1.1",
+=======
+    "version": "1.2.2",
+>>>>>>> 7e6b72f2c2e166bb3797df358918e5f29421b7d0
     "publisher": "avalon",
     "engines": {
         "vscode": "^1.33.0"
@@ -92,6 +96,31 @@
                     "type": "string",
                     "default": "./blogImage",
                     "description": "图片本地保存位置"
+                },
+                "xblog.isQiNiu": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "是否是七牛云存储,默认不是"
+                },
+                "xblog.domain": {
+                    "type": "string",
+                    "default": "",
+                    "description": "七牛云访问路径"
+                },
+                "xblog.ACCESS_KEY": {
+                    "type": "string",
+                    "default": "",
+                    "description": "七牛云AccessKey"
+                },
+                "xblog.SECRET_KEY": {
+                    "type": "string",
+                    "default": "",
+                    "description": "七牛云SecretKey "
+                },
+                "xblog.bucket": {
+                    "type": "string",
+                    "default": "",
+                    "description": "七牛云空间名"
                 }
             }
         }
@@ -115,7 +144,11 @@
         "jimp": "^0.6.1",
         "lodash": "^4.17.11",
         "moment": "^2.24.0",
+<<<<<<< HEAD
         "mongoose": "^5.9.12",
+=======
+        "qiniu": "^7.2.2",
+>>>>>>> 7e6b72f2c2e166bb3797df358918e5f29421b7d0
         "request": "^2.88.0"
     }
 }

@@ -82,3 +82,14 @@
 |data|List<发布文章DTO> |符合条件的文章,自行控制数量|
 
 ![](https://github.com/AVAL-NIX/vscode-xblog/raw/master/images/search.gif)
+
+
+
+## 后记
+
+```java
+npm install
+npm install --save qiniu
+npm install -g typescript
+npm install -g tslint --save
+```
