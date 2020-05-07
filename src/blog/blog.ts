@@ -378,11 +378,7 @@ function start() {
     const mdFilePath = editor.document.fileName;
     const mdFileName = path.basename(mdFilePath, path.extname(mdFilePath));
 
-<<<<<<< HEAD
     createImageDirWithImagePath(imagePath).then( () => {
-=======
-    createImageDirWithImagePath(imagePath).then((imagePath:any) => {
->>>>>>> 7e6b72f2c2e166bb3797df358918e5f29421b7d0
         saveClipboardImageToFileAndGetPath(imagePath, (imagePath: string) => {
             if (!imagePath) { return; }
             if (imagePath === 'no image') {

@@ -2,11 +2,7 @@
     "name": "xblog",
     "displayName": "xblog",
     "description": "提升写日记效率,用与自定义项目对接",
-<<<<<<< HEAD
-    "version": "1.1.1",
-=======
     "version": "1.2.2",
->>>>>>> 7e6b72f2c2e166bb3797df358918e5f29421b7d0
     "publisher": "avalon",
     "engines": {
         "vscode": "^1.33.0"
@@ -144,11 +140,7 @@
         "jimp": "^0.6.1",
         "lodash": "^4.17.11",
         "moment": "^2.24.0",
-<<<<<<< HEAD
-        "mongoose": "^5.9.12",
-=======
         "qiniu": "^7.2.2",
->>>>>>> 7e6b72f2c2e166bb3797df358918e5f29421b7d0
         "request": "^2.88.0"
     }
 }
